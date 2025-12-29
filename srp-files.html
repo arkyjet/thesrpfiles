@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The SRP Files | Classified Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #111;
+            --text-color: #a8b2b1;
+            --accent-red: #ff3333; /* For Corruption/Danger */
+            --accent-gold: #ffcc00; /* For Warnings */
+            --accent-blue: #00f0ff; /* For UI Elements */
+            --font-stack: 'Share Tech Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Animation */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--accent-red);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            color: var(--accent-red);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.7);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+        }
+
+        /* Navigation / Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 15px 30px;
+            font-family: var(--font-stack);
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: #333;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+        }
+
+        /* Sections */
+        .content-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .box {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+        }
+
+        h2 {
+            color: #fff;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+        }
+
+        h3 { color: var(--accent-gold); margin-top: 0; }
+
+        /* Citations */
+        .citation {
+            color: var(--accent-blue);
+            font-size: 0.8em;
+            vertical-align: super;
+            cursor: help;
+            text-decoration: none;
+            margin-left: 2px;
+        }
+
+        .citation:hover {
+            color: #fff;
+            text-shadow: 0 0 5px var(--accent-blue);
+        }
+
+        /* Timeline */
+        .timeline-item {
+            border-left: 2px solid #333;
+            padding-left: 20px;
+            margin-left: 10px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: #555;
+            border-radius: 50%;
+        }
+
+        .timeline-item.critical {
+            border-left-color: var(--accent-red);
+        }
+
+        .timeline-item.critical::before {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        .time {
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-color: var(--accent-blue);
+        }
+
+        /* Evidence Log (N-Word Section) */
+        .evidence-log {
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            border: 1px solid #444;
+            padding: 15px;
+            color: #0f0;
+            margin-bottom: 15px;
+        }
+        
+        .evidence-log strong { color: var(--accent-red); }
+
+        /* Footer / Sources */
+        .sources-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .source-item { margin-bottom: 10px; }
+        .source-id { color: var(--accent-blue); font-weight: bold; margin-right: 10px; }
+
+        /* Utility */
+        .redacted {
+            background: #fff;
+            color: #000;
+            padding: 0 4px;
+        }
+        
+        .decrypt-effect {
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="decrypt-effect">THE SRP FILES</h1>
+            <p class="subtitle">INTERNAL DOSSIER // EXPOSING SYSTEMIC FAILURE</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('corruption')">File A: Corruption</button>
+            <button class="tab-btn" onclick="switchTab('racism')">File B: Hate Speech</button>
+        </div>
+
+        <div id="corruption" class="content-section active">
+            <div class="box">
+                <h2><span class="decrypt-effect">Executive Summary</span></h2>
+                <p>
+                    Evidence collected from internal logs and witness testimony confirms that on <strong>November 8th, 2023</strong>, high-ranking administrative power was abused to protect specific users from valid punishment.
+                    Server Owner <strong>Jake</strong> intervened to reverse the blacklisting of a user accused of harassment, subsequently retaliating against the staff members who enforced the rules <a href="#s1" class="citation">[1]</a>.
+                </p>
+            </div>
+
+            <div class="box">
+                <h2>Key Figures</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3 style="color: var(--accent-red);">JAKE (Owner)</h3>
+                        <p><strong>Status:</strong> COMPROMISED</p>
+                        <p>Accused of reversing disciplinary actions, protecting harassers, and retaliating against staff.</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: var(--accent-red);">HEN (biscute_kitten)</h3>
+                        <p><strong>Status:</strong> PROTECTED</p>
+                        <p>Initiated harassment against Jonny. Protected by Jake despite multiple strikes.</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: #0f0;">ROCK (Staff)</h3>
+                        <p><strong>Status:</strong> VICTIM</p>
+                        <p>Demoted from SS to IA immediately after attempting to enforce rules against Hen.</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: #0f0;">JONNY (User)</h3>
+                        <p><strong>Status:</strong> VICTIM</p>
+                        <p>Target of harassment. Claims that she "consented" to the harassment were proven false <a href="#s1" class="citation">[1]</a>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2>Incident Timeline (Nov 8)</h2>
+                <div class="timeline-item">
+                    <span class="time">11:32 AM</span>
+                    <p>Hen (biscute_kitten) and Bently begin harassing Jonny (jonny0099f) in-game. A ticket is opened.</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="time">01:56 AM (Next Day)</span>
+                    <p><strong>Action Taken:</strong> Hen is demoted and blacklisted for the harassment. Authorization provided by <em>dakota_crickett578</em>.</p>
+                </div>
+                <div class="timeline-item critical">
+                    <span class="time">07:15 - 07:33 AM</span>
+                    <p><strong>The Cover-Up:</strong> Jake intervenes. He questions the validity of the punishment and <strong>revokes Hen's blacklist</strong>, reinstating him despite the evidence <a href="#s2" class="citation">[2]</a>.</p>
+                </div>
+                <div class="timeline-item critical">
+                    <span class="time">07:48 AM</span>
+                    <p><strong>Retaliation:</strong> Jake demotes <strong>Rock</strong> (the enforcer) from SS to IA. Simultaneously, <em>maximet361</em> is promoted to fill the void.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="racism" class="content-section">
+            <div class="box" style="border-color: var(--accent-red);">
+                <h2 style="color: var(--accent-red);">Subject: Racial Slurs</h2>
+                <p>This section compiles documented instances of Server Owner <strong>Jake</strong> using hate speech (specifically the N-word) in various contexts. These actions violate standard Terms of Service and community guidelines.</p>
+            </div>
+
+            <div class="box">
+                <h2>Evidence Log: Voice Chat</h2>
+                <div class="evidence-log">
+                    <p>>> <strong>DATE:</strong> Undisclosed</p>
+                    <p>>> <strong>CONTEXT:</strong> Voice Channel (VC) Dispute</p>
+                    <p>>> <strong>TRANSCRIPT:</strong> Jake was recorded engaging in a verbal altercation. During the heat of the argument, Jake explicitly used the <strong>[N-WORD]</strong> with a hard-R ending <a href="#s2" class="citation">[2]</a>.</p>
+                    <p>>> <strong>WITNESSES:</strong> Multiple staff members present.</p>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2>Evidence Log: Text Communications</h2>
+                <div class="evidence-log">
+                    <p>>> <strong>DATE:</strong> Undisclosed</p>
+                    <p>>> <strong>CONTEXT:</strong> Discord Direct Messages / General Chat</p>
+                    <p>>> <strong>RECORD:</strong> Screenshots provided in the "Jake Incidents" file show Jake typing <strong>"n****r"</strong> in a casual context.</p>
+                    <p>>> <strong>DEFENSE:</strong> When confronted, the subject reportedly dismissed the usage as "just a joke" or "not serious" <a href="#s2" class="citation">[2]</a>.</p>
+                </div>
+            </div>
+            
+            <div class="box">
+                <h2>Evidence Log: Derogatory Phrasing</h2>
+                 <div class="evidence-log">
+                    <p>>> <strong>CONTEXT:</strong> General Conversation</p>
+                    <p>>> <strong>RECORD:</strong> Subject has been documented using the phrase "dumb <strong>[n-word]</strong>" when referring to other users or staff members he disagrees with.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sources-footer">
+            <h3>SOURCE REFERENCE LIST</h3>
+            <div id="s1" class="source-item">
+                <span class="source-id">[1]</span>
+                <span class="source-text"><strong>Incident Report (Jonny & Hen):</strong> Primary documentation of the harassment event on 11/08/23 and subsequent demotion logs.</span>
+            </div>
+            <div id="s2" class="source-item">
+                <span class="source-id">[2]</span>
+                <span class="source-text"><strong>The "Jake Incidents" Archive:</strong> Compilation of screenshots and logs detailing corruption, abuse of power, and use of racial slurs.</span>
+            </div>
+            <p style="margin-top:20px; text-align:center;">GENERATED BY THE SRP FILES // END OF REPORT</p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- JAVASCRIPT ---
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Remove active class from all tabs and sections
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding section
+            document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Decryption Effect Function (Matrix-style text reveal)
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+        
+        function decryptText(element) {
+            const originalText = element.innerText;
+            let iterations = 0;
+            
+            const interval = setInterval(() => {
+                element.innerText = originalText.split('')
+                    .map((letter, index) => {
+                        if(index < iterations) {
+                            return originalText[index];
+                        }
+                        return characters[Math.floor(Math.random() * characters.length)];
+                    })
+                    .join('');
+                
+                if(iterations >= originalText.length){ 
+                    clearInterval(interval);
+                    element.innerText = originalText; // Ensure final text is clean
+                }
+                
+                iterations += 1/3; // Speed of decryption
+            }, 30);
+        }
+
+        // Run decryption on header immediately
+        window.onload = () => {
+            const headers = document.querySelectorAll('.decrypt-effect');
+            headers.forEach(header => decryptText(header));
+            console.log("THE SRP FILES: ARCHIVE LOADED.");
+        };
+
+    </script>
+</body>
+</html>
